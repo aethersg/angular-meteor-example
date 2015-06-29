@@ -1,43 +1,97 @@
-<form ng-show="$rootScope.currentUser">
-    <div ng-hide="$rootScope.currentUser || $root.loggingIn">
-        Log in to create a party !
-    </div>
-    <label for="newPartyName">Name</label>
-    <input id="newPartyName" ng-model="newParty.name">
-    <label for="newPartyDesc">Description</label>
-    <input id="newPartyDesc" ng-model="newParty.description">
-    <label for="newPartyPublic">Public</label>
-    <input id="newPartyPublic" type="checkbox" ng-model="newParty.public">
-    <button ng-click="newParty.owner=$root.currentUser._id; parties.push(newParty)">Add</button>
-</form>
-<ul>
-    <h1>Parties:</h1>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="alert alert-info" ng-hide="$root.currentUser || $root.loggingIn">
+            Log in to create a party !
+        </div>
+        <form ng-show="$rootScope.currentUser">
+            <h2>Create a new Party :</h2>
 
-    <div>
-        <input type="search" ng-model="search" placeholder="Search">
-        <select ng-model="orderProperty">
-            <option value="1">Ascending</option>
-            <option value="-1">Descending</option>
-        </select>
+            <div class="form-group">
+                <label for="newPartyName">Name</label>
+                <input id="newPartyName" ng-model="newParty.name" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="newPartyDesc">Description</label>
+                <input id="newPartyDesc" ng-model="newParty.description" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="newPartyPublic">Public</label>
+                <input id="newPartyPublic" type="checkbox" ng-model="newParty.public" class="form-control">
+            </div>
+            <button ng-click="newParty.owner=$root.currentUser._id; parties.push(newParty)" class="btn">Add</button>
+        </form>
     </div>
-    <li dir-paginate="party in parties | itemsPerPage: perPage" total-items="partiesCount.count">
-        <a href="/parties/{{party._id}}">{{party.name}}</a>
+</div>
 
-        <p>{{party.description}}</p>
-        <button ng-click="remove(party)">X</button>
-        <p>
-            <small>Posted by {{ creator(party) | displayName }}</small>
-        </p>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Parties:</h1>
+
+        <form class="form-inline search-form">
+            <div class="form-group">
+                <label class="sr-only" for="search">Search</label>
+
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </div>
+                    <input class="form-control" id="search" type="search" ng-model="search"
+                           placeholder="Search">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="sr-only" for="sort-order">Sort Order</label>
+                <select ng-model="orderProperty" class="form-control" id="sort-order">
+                    <option value="1">Ascending</option>
+                    <option value="-1">Descending</option>
+                </select>
+            </div>
+        </form>
+        <div class="angular-google-map-container">
+            <ui-gmap-google-map center="party.location || map.center" zoom="map.zoom">
+                <ui-gmap-markers models="parties" coords="'location'" click="onClicked()"
+                                 fit="true" idkey="'_id'" doRebuildAll="true">
+                </ui-gmap-markers>
+            </ui-gmap-google-map>
+        </div>
+    </div>
+</div>
+
+
+<ul class="list-group">
+
+    <li dir-paginate="party in parties | itemsPerPage: perPage" total-items="partiesCount.count"
+        class="list-group-item">
+        <div class="row">
+            <div class="col-sm-8">
+                <h2><a href="/parties/{{party._id}}">{{party.name}}</a></h2>
+
+                <p>{{party.description}}</p>
+            </div>
+            <div class="col-sm-4">
+                <a ng-click="remove(party)" class="close"
+                   ng-show="$root.currentUser && $root.currentUser._id == party.owner">&times;</a>
+            </div>
+        </div>
+
         <div ng-show="$root.currentUser">
             <input type="button" value="I'm going!" ng-click="rsvp(party._id, 'yes')">
             <input type="button" value="Maybe" ng-click="rsvp(party._id, 'maybe')">
             <input type="button" value="No" ng-click="rsvp(party._id, 'no')">
         </div>
+
+        <div ng-if="party.public">
+            Everyone is invited
+        </div>
+
         <div ng-hide="$root.currentUser">
             <i>Sign in to RSVP for this party</i>
         </div>
+
         <div>
-            Who is coming:
+            <strong>Who is coming:</strong>
             Yes - {{ (party.rsvps | filter:{rsvp:'yes'}).length }}
             Maybe - {{ (party.rsvps | filter:{rsvp:'maybe'}).length }}
             No - {{ (party.rsvps | filter:{rsvp:'no'}).length }}
@@ -52,16 +106,17 @@
             </div>
         </div>
         <ul ng-if="!party.public">
-            Users who not responded:
+            Users who has not responded:
             <li ng-repeat="invitedUser in outstandingInvitations(party)">
                 {{ invitedUser | displayName }}
             </li>
         </ul>
-        <div ng-if="party.public">
-            Everyone is invited
-        </div>
+        <p>
+            <small>Posted by {{ creator(party) | displayName }}</small>
+        </p>
     </li>
 </ul>
+
 <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
 <p>Total number of parties: {{partiesCount.count}}</p>
-<button ng-click="removeAll()">remove all</button>
+<button ng-click="removeAll()" class="btn">remove all</button>

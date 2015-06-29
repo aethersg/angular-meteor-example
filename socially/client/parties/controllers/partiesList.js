@@ -22,6 +22,19 @@ angular.module("socially").controller("PartiesListCtrl", ['$scope', '$meteor', '
                 sort: $scope.getReactively('sort')
             }, $scope.getReactively('search')).then(function () {
                 $scope.partiesCount = $meteor.object(Counts, 'numberOfParties', false);
+
+                $scope.parties.forEach(function (party) {
+                    party.onClick = function () {
+                        $state.go('partyDetails', {partyId: party._id});
+                    };
+                });
+                $scope.map = {
+                    center: {
+                        latitude: 1.290270,
+                        longitude: 103.851959
+                    },
+                    zoom: 8
+                }
             });
         });
 
