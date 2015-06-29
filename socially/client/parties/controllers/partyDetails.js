@@ -17,4 +17,15 @@ angular.module("socially").controller("PartyDetailsCtrl", ['$scope', '$statePara
         $scope.$on('$destroy', function () {
             subscriptionHandle.stop();
         });
+
+        $scope.invite = function (user) {
+            $meteor.call('invite', $scope.party._id, user._id).then(
+                function (data) {
+                    console.log('Success inviting', data);
+                },
+                function (err) {
+                    console.log('failed', err);
+                }
+            );
+        };
     }]);

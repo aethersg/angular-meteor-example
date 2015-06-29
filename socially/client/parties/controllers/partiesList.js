@@ -2,7 +2,7 @@
  * Created by judetan on 24/6/15.
  */
 angular.module("socially").controller("PartiesListCtrl", ['$scope', '$meteor', '$rootScope',
-    function ($scope, $meteor ,$rootScope) {
+    function ($scope, $meteor, $rootScope) {
 
         $scope.page = 1;
         $scope.perPage = 3;
@@ -25,7 +25,7 @@ angular.module("socially").controller("PartiesListCtrl", ['$scope', '$meteor', '
             });
         });
 
-        $meteor.subscribe('users');
+        $scope.users = $meteor.collection(Meteor.users, false).subscribe('users');
 
         $scope.remove = function (party) {
             $scope.parties.remove(party);
@@ -62,5 +62,22 @@ angular.module("socially").controller("PartiesListCtrl", ['$scope', '$meteor', '
                     if (owner._id === $rootScope.currentUser._id)
                         return 'me';
             return owner;
+        };
+
+        $scope.rsvp = function (partyId, rsvp) {
+            $meteor.call('rsvp', partyId, rsvp).then(
+                function (data) {
+                    console.log('success', data);
+                },
+                function (err) {
+                    console.log('failed', err);
+                }
+            );
+        };
+        $scope.outstandingInvitations = function (party) {
+
+            return _.filter($scope.users, function (user) {
+                return (_.contains(party.invited, user._id) && !_.findWhere(party.rsvps, {user: user._id}));
+            });
         };
     }]);
