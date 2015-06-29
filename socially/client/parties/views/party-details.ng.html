@@ -1,17 +1,20 @@
 Here you will see and change the details of the party:
 
 <label for="partyName">Party Name</label>
-<input id="partyName" ng-model="party.name">
+<input ng-disabled="party.owner != $root.currentUser._id" id="partyName" ng-model="party.name">
 <label for="partyDesc">Party Description</label>
-<input id="partyDesc" ng-model="party.description">
+<input ng-disabled="party.owner != $root.currentUser._id" id="partyDesc" ng-model="party.description">
 <label for="partyPublic">Is public</label>
-<input id="partyPublic" type="checkbox" ng-model="party.public">
+<input ng-disabled="party.owner != $root.currentUser._id" id="partyPublic" type="checkbox" ng-model="party.public">
 
-<ul>
+<ul ng-show="canInvite()">
     Users to Invite
     <li ng-repeat="user in users | uninvited:party">
         <div>{{ user | displayName }}</div>
         <button ng-click="invite(user)">Invite</button>
+    </li>
+    <li ng-if="(users | uninvited:party).length <= 0">
+        Everyone is already invited.
     </li>
 </ul>
 

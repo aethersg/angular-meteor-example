@@ -1,4 +1,7 @@
-<form>
+<form ng-show="$rootScope.currentUser">
+    <div ng-hide="$rootScope.currentUser || $root.loggingIn">
+        Log in to create a party !
+    </div>
     <label for="newPartyName">Name</label>
     <input id="newPartyName" ng-model="newParty.name">
     <label for="newPartyDesc">Description</label>
@@ -25,10 +28,13 @@
         <p>
             <small>Posted by {{ creator(party) | displayName }}</small>
         </p>
-        <div>
+        <div ng-show="$root.currentUser">
             <input type="button" value="I'm going!" ng-click="rsvp(party._id, 'yes')">
             <input type="button" value="Maybe" ng-click="rsvp(party._id, 'maybe')">
             <input type="button" value="No" ng-click="rsvp(party._id, 'no')">
+        </div>
+        <div ng-hide="$root.currentUser">
+            <i>Sign in to RSVP for this party</i>
         </div>
         <div>
             Who is coming:
@@ -45,12 +51,15 @@
                 {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
             </div>
         </div>
-        <ul>
+        <ul ng-if="!party.public">
             Users who not responded:
             <li ng-repeat="invitedUser in outstandingInvitations(party)">
                 {{ invitedUser | displayName }}
             </li>
         </ul>
+        <div ng-if="party.public">
+            Everyone is invited
+        </div>
     </li>
 </ul>
 <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
