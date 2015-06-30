@@ -63,8 +63,8 @@
                 </div>
                 <span flex></span>
                 <md-button ng-click="remove(party)"
-                           ng-show="$root.currentUser && $root.currentUser._id == party.owner">
-                    <md-icon md-svg-icon="contentic:ic_clear_24px"></md-icon>
+                           ng-show="$root.currentUser && $root.currentUser._id == party.owner" aria-label="Remove">
+                    <md-icon md-svg-icon="content:ic_clear_24px"></md-icon>
                 </md-button>
             </div>
             <div ng-show="$root.currentUser">
