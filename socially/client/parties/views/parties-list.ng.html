@@ -1,122 +1,115 @@
-<div class="row">
-    <div class="col-sm-12">
-        <div class="alert alert-info" ng-hide="$root.currentUser || $root.loggingIn">
-            Log in to create a party !
-        </div>
+<md-content layout-padding>
+    <div layout="column">
+        <md-whiteframe class="md-whiteframe-z1" layout kayout-align="center center"
+                       ng-hide="$root.currentUser || $root.loggingIn">
+            <span>Log in to create a party !</span>
+        </md-whiteframe>
         <form ng-show="$rootScope.currentUser">
-            <h2>Create a new Party :</h2>
-
-            <div class="form-group">
+            <h2 class="md-headline">Create a new Party :</h2>
+            <md-input-container>
                 <label for="newPartyName">Name</label>
-                <input id="newPartyName" ng-model="newParty.name" type="text" class="form-control">
-            </div>
-            <div class="form-group">
+                <input id="newPartyName" ng-model="newParty.name" type="text" aria-label="Name">
+            </md-input-container>
+            <md-input-container>
                 <label for="newPartyDesc">Description</label>
-                <input id="newPartyDesc" ng-model="newParty.description" type="text" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="newPartyPublic">Public</label>
-                <input id="newPartyPublic" type="checkbox" ng-model="newParty.public" class="form-control">
-            </div>
-            <button ng-click="newParty.owner=$root.currentUser._id; parties.push(newParty)" class="btn">Add</button>
+                <input id="newPartyDesc" ng-model="newParty.description" type="text" aria-label="Description">
+            </md-input-container>
+            <md-checkbox id="newPartyPublic" type="checkbox" ng-model="newParty.public" aria-label="Public">
+                Public
+            </md-checkbox>
+            <md-button ng-click="newParty.owner=$root.currentUser._id; parties.push(newParty)" class="btn">Add
+            </md-button>
         </form>
     </div>
-</div>
 
+    <div layout="column">
+        <h2 class="md-headline">Parties:</h2>
 
-<div class="row">
-    <div class="col-sm-12">
-        <h1>Parties:</h1>
+        <form layout="row">
+            <md-input-container md-no-float>
+                <md-icon md-svg-icon="action:ic_search_24px"></md-icon>
+                <input id="search" type="text" ng-model="search"
+                       placeholder="Search" aria-label="Search">
+            </md-input-container>
+            <span flex></span>
+            <md-input-container>
+                <md-select ng-model="orderProperty" placeholder="Sort Order">
+                    <md-option value="1">Ascending</md-option>
+                    <md-option value="-1">Descending</md-option>
+                </md-select>
+            </md-input-container>
+        </form>
+        <div layout="row">
+            <div flex></div>
 
-        <form class="form-inline search-form">
-            <div class="form-group">
-                <label class="sr-only" for="search">Search</label>
+            <div flex="60" class="angular-google-map-container">
+                <ui-gmap-google-map center="party.location || map.center" zoom="map.zoom">
+                    <ui-gmap-markers models="parties" coords="'location'" click="onClicked()"
+                                     fit="true" idkey="'_id'" doRebuildAll="true">
+                    </ui-gmap-markers>
+                </ui-gmap-google-map>
+            </div>
+            <div flex></div>
+        </div>
+    </div>
 
-                <div class="input-group">
-                    <div class="input-group-addon">
-                        <i class="glyphicon glyphicon-search"></i>
-                    </div>
-                    <input class="form-control" id="search" type="search" ng-model="search"
-                           placeholder="Search">
+    <div layout="column" layout-padding>
+        <div dir-paginate="party in parties | itemsPerPage: perPage" total-items="partiesCount.count" layout="column">
+            <div layout="row">
+                <div flex="80">
+                    <h2><a href="/parties/{{party._id}}">{{party.name}}</a></h2>
+
+                    <p>{{party.description}}</p>
+                </div>
+                <span flex></span>
+                <md-button ng-click="remove(party)"
+                           ng-show="$root.currentUser && $root.currentUser._id == party.owner">
+                    <md-icon md-svg-icon="contentic:ic_clear_24px"></md-icon>
+                </md-button>
+            </div>
+            <div ng-show="$root.currentUser">
+                <md-button ng-click="rsvp(party._id, 'yes')">I'm Going !</md-button>
+                <md-button ng-click="rsvp(party._id, 'maybe')">Maybe</md-button>
+                <md-button ng-click="rsvp(party._id, 'no')">No</md-button>
+            </div>
+            <div ng-if="party.public">
+                Everyone is invited
+            </div>
+
+            <div ng-hide="$root.currentUser">
+                <i>Sign in to RSVP for this party</i>
+            </div>
+            <div>
+                <strong>Who is coming:</strong>
+                Yes - {{ (party.rsvps | filter:{rsvp:'yes'}).length }}
+                Maybe - {{ (party.rsvps | filter:{rsvp:'maybe'}).length }}
+                No - {{ (party.rsvps | filter:{rsvp:'no'}).length }}
+                <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'yes'}">
+                    {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
+                </div>
+                <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'maybe'}">
+                    {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
+                </div>
+                <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'no'}">
+                    {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
                 </div>
             </div>
-
-            <div class="form-group">
-                <label class="sr-only" for="sort-order">Sort Order</label>
-                <select ng-model="orderProperty" class="form-control" id="sort-order">
-                    <option value="1">Ascending</option>
-                    <option value="-1">Descending</option>
-                </select>
-            </div>
-        </form>
-        <div class="angular-google-map-container">
-            <ui-gmap-google-map center="party.location || map.center" zoom="map.zoom">
-                <ui-gmap-markers models="parties" coords="'location'" click="onClicked()"
-                                 fit="true" idkey="'_id'" doRebuildAll="true">
-                </ui-gmap-markers>
-            </ui-gmap-google-map>
+            <md-list ng-if="!party.public">
+                Users who has not responded:
+                <md-list-item ng-repeat="invitedUser in outstandingInvitations(party)">
+                    {{ invitedUser | displayName }}
+                </md-list-item>
+            </md-list>
+            <p>
+                <small>Posted by {{ creator(party) | displayName }}</small>
+            </p>
         </div>
     </div>
-</div>
+    <dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+    <p>Total number of parties: {{partiesCount.count}}</p>
+    <button ng-click="removeAll()" class="btn">remove all</button>
+
+</md-content>
 
 
-<ul class="list-group">
 
-    <li dir-paginate="party in parties | itemsPerPage: perPage" total-items="partiesCount.count"
-        class="list-group-item">
-        <div class="row">
-            <div class="col-sm-8">
-                <h2><a href="/parties/{{party._id}}">{{party.name}}</a></h2>
-
-                <p>{{party.description}}</p>
-            </div>
-            <div class="col-sm-4">
-                <a ng-click="remove(party)" class="close"
-                   ng-show="$root.currentUser && $root.currentUser._id == party.owner">&times;</a>
-            </div>
-        </div>
-
-        <div ng-show="$root.currentUser">
-            <input type="button" value="I'm going!" ng-click="rsvp(party._id, 'yes')">
-            <input type="button" value="Maybe" ng-click="rsvp(party._id, 'maybe')">
-            <input type="button" value="No" ng-click="rsvp(party._id, 'no')">
-        </div>
-
-        <div ng-if="party.public">
-            Everyone is invited
-        </div>
-
-        <div ng-hide="$root.currentUser">
-            <i>Sign in to RSVP for this party</i>
-        </div>
-
-        <div>
-            <strong>Who is coming:</strong>
-            Yes - {{ (party.rsvps | filter:{rsvp:'yes'}).length }}
-            Maybe - {{ (party.rsvps | filter:{rsvp:'maybe'}).length }}
-            No - {{ (party.rsvps | filter:{rsvp:'no'}).length }}
-            <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'yes'}">
-                {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
-            </div>
-            <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'maybe'}">
-                {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
-            </div>
-            <div ng-repeat="rsvp in party.rsvps | filter:{rsvp:'no'}">
-                {{ getUserById(rsvp.user) | displayName }} - {{ rsvp.rsvp }}
-            </div>
-        </div>
-        <ul ng-if="!party.public">
-            Users who has not responded:
-            <li ng-repeat="invitedUser in outstandingInvitations(party)">
-                {{ invitedUser | displayName }}
-            </li>
-        </ul>
-        <p>
-            <small>Posted by {{ creator(party) | displayName }}</small>
-        </p>
-    </li>
-</ul>
-
-<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
-<p>Total number of parties: {{partiesCount.count}}</p>
-<button ng-click="removeAll()" class="btn">remove all</button>
