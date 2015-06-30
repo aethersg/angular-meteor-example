@@ -1,5 +1,5 @@
 /**
- * Created by judetan on 29/6/15.
+ * Created by Jude Tan on 29/6/15.
  */
 angular.module('socially').filter('uninvited', function () {
     return function (users, party) {

@@ -1,5 +1,5 @@
 /**
- * Created by judetan on 24/6/15.
+ * Created by Jude Tan on 24/6/15.
  */
 
 angular.module("socially").run(["$rootScope", "$state", function ($rootScope, $state) {

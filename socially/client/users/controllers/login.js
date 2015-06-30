@@ -1,5 +1,5 @@
 /**
- * Created by judetan on 30/6/15.
+ * Created by Jude Tan on 30/6/15.
  */
 
 angular.module("socially").controller("LoginCtrl", ['$meteor', '$state',

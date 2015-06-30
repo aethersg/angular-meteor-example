@@ -1,5 +1,5 @@
 /**
- * Created by judetan on 24/6/15.
+ * Created by Jude Tan on 24/6/15.
  */
 
 Parties = new Mongo.Collection('parties');
@@ -44,7 +44,7 @@ Meteor.methods({
                  we can also move this to a separate file
                  */
                 Email.send({
-                    from: 'noreply@socailly',
+                    from: 'noreply@socially',
                     to: to,
                     replyTo: from || undefined,
                     subject: 'Party : ' + party.title,
@@ -95,7 +95,7 @@ Meteor.methods({
     }
 });
 
-var contectEmail = function (user) {
+var contactEmail = function (user) {
     if (user.emails && user.emails.length)
         return user.emails[0].address;
     if (user.services && user.services.facebook && user.services.facebook.email)
