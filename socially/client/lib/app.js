@@ -10,7 +10,7 @@ angular.module('socially', [
     'ngMaterial'
 ]);
 
-var themeIcons = ['$mdIconProvider' , function ($mdIconProvider) {
+var themeIcons = ['$mdIconProvider', function ($mdIconProvider) {
 
     $mdIconProvider
         .iconSet("social",
