@@ -10,7 +10,7 @@ angular.module('socially', [
     'ngMaterial'
 ]);
 
-var themeIcons = function ($mdIconProvider) {
+var themeIcons = ['$mdIconProvider' , function ($mdIconProvider) {
 
     $mdIconProvider
         .iconSet("social",
@@ -34,7 +34,7 @@ var themeIcons = function ($mdIconProvider) {
         .iconSet("image",
         "/packages/planettraining_material-design-icons/bower_components/material-design-icons/sprites/svg-sprite/svg-sprite-image.svg");
 
-};
+}];
 
 angular.module('socially').config(themeIcons);
 
