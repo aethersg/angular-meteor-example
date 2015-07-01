@@ -36,8 +36,7 @@ var themeIcons = function ($mdIconProvider) {
 
 };
 
-angular.module('socially')
-    .config(themeIcons);
+angular.module('socially').config(themeIcons);
 
 function onReady() {
     angular.bootstrap(document, ['socially']);
