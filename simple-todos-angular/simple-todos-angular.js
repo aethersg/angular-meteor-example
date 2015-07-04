@@ -13,7 +13,7 @@ if (Meteor.isClient) {
 
     angular.module('simple-todos').controller('TodosListCtrl', ['$scope', '$meteor',
         function ($scope, $meteor) {
-            $scope.tasks = $meteor.collection(function() {
+            $scope.tasks = $meteor.collection(function () {
                 return Tasks.find($scope.getReactively('query'), {sort: {createdAt: -1}})
             });
 
@@ -34,10 +34,23 @@ if (Meteor.isClient) {
             });
 
             $scope.incompleteCount = function () {
-                return Tasks.find({ checked: {$ne: true} }).count();
+                return Tasks.find({checked: {$ne: true}}).count();
             };
+            $scope.addTask = function (newTask) {
+                $scope.tasks.push({
+                        text: newTask,
+                        createdAt: new Date(),             // current time
+                        owner: Meteor.userId(),            // _id of logged in user
+                        username: Meteor.user().username    // username of logged in user
+                    }
+                );
+            };
+
         }
     ]);
+    Accounts.ui.config({
+        passwordSignupFields: "USERNAME_ONLY"
+    });
 }
 
 if (Meteor.isServer) {
